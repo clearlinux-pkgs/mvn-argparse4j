@@ -1,0 +1,52 @@
+argparse4j 0.7.0
+================
+
+Release Note
+------------
+
+This release adds several new functionalists.
+ArgumentParser#parseKnownArgs() family methods were added to parse
+known arguments only.  Metavar for Boolean and Enum types are now
+automatically generated if neither Argument#metavar() nor
+Argument#choices() is used.  To achieve this, MetavarInference
+interface, which is part of public API, was added for the underlying
+mechanism.  The BooleanArgumenType and its helper method
+Arguments#booleanType() were added for strict boolean parameter
+handling.  Previously, when parsing concatenated short options, the
+default prefix character ("-") is used, regardless of the prefix
+characters given by application.  Now it is corrected, and the prefix
+characters given by application are used for this purpose.
+
+Changes
+-------
+
+* Add BooleanArgumentType for strict boolean value conversion
+
+* Infer metavar for enums
+
+  Previously, when enum types is used as type, either with
+  ReflectArgumentType or EnumStringArgumentType, application had to
+  set metavar to show their available values.  With this commit,
+  metavar is automatically created using MetavarInference interface.
+
+* Introduce MetavarInference interface, and infer Boolean metavar
+
+  Previously, when Boolean.class is passed to Argument#type(), and no
+  metavar is provided, the help message was like "-f F".  This is
+  intentional, and expected, but it is better for user to show them F
+  is true or false.  This commit introduce MetavarInference interface.
+  When sub class of ArgumentType also implements MetavarInference, it
+  can infer metavar from its interface.  We made ReflectArgumentType
+  implement this interface, and if Boolean.class is given for its
+  constructor, then return useful Boolean value metavar from
+  inferMetavar() method.
+
+* Add ArgumentParser#parseKnownArgs() to parse known arguments only
+
+  If a parameter, named unknown, is given, all unrecognized arguments
+  are stored in it.  This parsing operation does not work in all cases
+  as you expect.  In particular, if variable length positional
+  arguments (nargs("*") or nargs("+")), all non-prefixed arguments are
+  consumed.
+
+* Use prefixChars to parse concatenated short options
